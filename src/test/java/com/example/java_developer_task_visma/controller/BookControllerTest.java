@@ -30,7 +30,8 @@ class BookControllerTest {
     private static final String BOOK_NAME = "Book1";
     private static final String DATE_TAKEN_UNTIL = "2000-01-01";
     private static final String BOOK_GUID = "GUID1";
-    private static final BookModel bookModel = new BookModel(READER_NAME, "Test1", "Cat", "Lang", "Date", "ISBN", BOOK_GUID, null, true);
+    private static final BookModel bookModel = new BookModel(READER_NAME, "Test1", "Cat",
+            "Lang", "Date", "ISBN", BOOK_GUID, null, true);
 
 
     @MockBean
