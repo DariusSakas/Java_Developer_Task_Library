@@ -17,19 +17,6 @@ public class BookModel {
     public BookModel() {
     }
 
-    public BookModel(String name, String author, String category, String language, String publicationDate, String ISBN, String GUID, ReaderModel reader, Boolean taken, String returnDate) {
-        this.name = name;
-        this.author = author;
-        this.category = category;
-        this.language = language;
-        this.publicationDate = publicationDate;
-        this.ISBN = ISBN;
-        this.GUID = GUID;
-        this.reader = reader;
-        this.taken = taken;
-        this.returnDate = returnDate;
-    }
-
     public BookModel(String name, String author, String category, String language, String publicationDate, String ISBN, String GUID, ReaderModel reader, Boolean taken) {
         this.name = name;
         this.author = author;
