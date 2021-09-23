@@ -4,6 +4,8 @@ import com.example.java_developer_task_visma.Exceptions.BookNotFoundException;
 import com.example.java_developer_task_visma.Exceptions.CantTakeBookThatLongException;
 import com.example.java_developer_task_visma.Exceptions.ReaderHasReachedMaximumBooksThreshold;
 import com.example.java_developer_task_visma.service.BookService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/library")
 public class BookController {
+    private static final Logger logger = LogManager.getLogger(BookController.class);
 
     private final BookService bookService;
 
@@ -37,7 +40,7 @@ public class BookController {
             @RequestParam(value = "value") String value
     ) {
         List<BookModel> bookList = bookService.findAllBooksByFilter(filter, value);
-        if (bookList == null){
+        if (bookList == null) {
             return new ResponseEntity<>("Book not found. Check filter or value", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(bookList, HttpStatus.OK);
@@ -45,7 +48,7 @@ public class BookController {
 
     @PostMapping
     @RequestMapping("/addBook")
-    public ResponseEntity<String> addBookToLibrary(
+    public ResponseEntity<BookModel> addBookToLibrary(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "author") String author,
             @RequestParam(value = "category") String category,
@@ -67,7 +70,7 @@ public class BookController {
 
         bookService.addBookToLibrary(newBookToAdd);
 
-        return new ResponseEntity<>("Book successfully added to library.JSON", HttpStatus.OK);
+        return new ResponseEntity<>(newBookToAdd, HttpStatus.CREATED);
     }
 
 
@@ -88,10 +91,15 @@ public class BookController {
     }
 
     @DeleteMapping("/deleteBookByGUID/{GUID}")
-    public ResponseEntity<String> deleteBookByGUID(@PathVariable String GUID) {
+    public ResponseEntity<?> deleteBookByGUID(@PathVariable String GUID) {
 
-        bookService.removeBookByGUID(GUID);
-        return new ResponseEntity<>("Book removed succesfully", HttpStatus.OK);
+        try {
+            BookModel bookToRemove = bookService.removeBookByGUID(GUID);
+            return new ResponseEntity<>(bookToRemove, HttpStatus.OK);
+        } catch (BookNotFoundException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>("Book not found. Check GUID", HttpStatus.BAD_REQUEST);
     }
 
 }

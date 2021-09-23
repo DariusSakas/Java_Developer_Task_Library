@@ -54,7 +54,7 @@ public class BookService {
         checkIfTakeUntilDateIsValid(takeUntilDate);
 
         BookModel bookToTake = findBookByName(booksThatArentTaken, bookName);
-        throwExceptionIfBookToTakeIsNull(bookToTake);
+        throwExceptionIfBookIsNull(bookToTake);
 
         setBookValueTakenTrue(bookToTake);
         setTakeUntilDate(takeUntilDate, bookToTake);
@@ -64,14 +64,17 @@ public class BookService {
 
     }
 
-    public void removeBookByGUID(String GUID) {
+    public BookModel removeBookByGUID(String GUID) throws BookNotFoundException {
         List<BookModel> allRegisteredBooks = getAllBooksFromLibrary();
         List<BookModel> booksThatArentTaken = collectBooksToListThatHaveTakenFalse(allRegisteredBooks);
 
-        booksThatArentTaken.stream().filter(e -> e.getGUID().equals(GUID)).findAny().ifPresent(allRegisteredBooks::remove);
+        BookModel bookModel = booksThatArentTaken.stream().filter(e -> e.getGUID().equals(GUID)).findAny().orElse(null);
 
+        throwExceptionIfBookIsNull(bookModel);
+
+        allRegisteredBooks.remove(bookModel);
         saveModifiedBookListToLibrary(allRegisteredBooks);
-        System.out.println("Book removed");
+        return bookModel;
     }
 
     private void saveModifiedBookListToLibrary(List<BookModel> bookModelList) {
@@ -145,7 +148,7 @@ public class BookService {
         bookToTake.setTaken(true);
     }
 
-    private void throwExceptionIfBookToTakeIsNull(BookModel bookToTake) throws BookNotFoundException {
+    private void throwExceptionIfBookIsNull(BookModel bookToTake) throws BookNotFoundException {
         if (bookToTake == null)
             throw new BookNotFoundException("Such a book is not found in library");
     }
@@ -163,17 +166,17 @@ public class BookService {
         List<BookModel> allBooks = getAllBooksFromLibrary();
         switch (filter) {
             case ("name"):
-                return allBooks.stream().filter(e-> e.getName().equals(value)).collect(Collectors.toList());
+                return allBooks.stream().filter(e -> e.getName().equals(value)).collect(Collectors.toList());
             case ("author"):
-                return allBooks.stream().filter(e->e.getAuthor().equals(value)).collect(Collectors.toList());
+                return allBooks.stream().filter(e -> e.getAuthor().equals(value)).collect(Collectors.toList());
             case ("category"):
-                return allBooks.stream().filter(e-> e.getCategory().equals(value)).collect(Collectors.toList());
+                return allBooks.stream().filter(e -> e.getCategory().equals(value)).collect(Collectors.toList());
             case ("language"):
-                return allBooks.stream().filter(e->e.getLanguage().equals(value)).collect(Collectors.toList());
+                return allBooks.stream().filter(e -> e.getLanguage().equals(value)).collect(Collectors.toList());
             case ("ISBN"):
-                return allBooks.stream().filter(e-> e.getISBN().equals(value)).collect(Collectors.toList());
-            case("taken"):
-                return allBooks.stream().filter(e-> e.getTaken().toString().equals(value)).collect(Collectors.toList());
+                return allBooks.stream().filter(e -> e.getISBN().equals(value)).collect(Collectors.toList());
+            case ("taken"):
+                return allBooks.stream().filter(e -> e.getTaken().toString().equals(value)).collect(Collectors.toList());
 
         }
         return null;
