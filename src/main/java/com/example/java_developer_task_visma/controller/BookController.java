@@ -73,7 +73,6 @@ public class BookController {
         return new ResponseEntity<>(newBookToAdd, HttpStatus.CREATED);
     }
 
-
     @PutMapping
     @RequestMapping("/takeBook")
     public ResponseEntity<String> takeBookFromLibraryByReader(

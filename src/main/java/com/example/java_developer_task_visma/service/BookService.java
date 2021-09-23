@@ -181,4 +181,15 @@ public class BookService {
         }
         return null;
     }
+
+    public void removeBookWithTakenTrue(String bookName) {
+        List<BookModel> allRegisteredBooks = getAllBooksFromLibrary();
+        BookModel bookModel = allRegisteredBooks.stream().filter(e -> e.getName().equals(bookName)).findAny().orElse(null);
+        if (bookModel != null) {
+            allRegisteredBooks.remove(bookModel);
+            saveModifiedBookListToLibrary(allRegisteredBooks);
+        }
+    }
+
 }
+
